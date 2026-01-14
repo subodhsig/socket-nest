@@ -1,0 +1,2 @@
+pnpm migration:generate src/database/migrations/CreateProjectTarget
+pnpm migration:run

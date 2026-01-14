@@ -1,0 +1,19 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: always
+    - when: never
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  script:
+    - docker build -t pms-api:$CI_COMMIT_SHORT_SHA .
+
+deploy:
+  stage: deploy
+  script:
+    - export BACKEND_TAG="$CI_COMMIT_SHORT_SHA" && cd /home/gitlab-runner/pms && docker stop pms-backend-api && docker rm pms-backend-api && docker run -d -p 3005:3005 --env-file ./backend/.env --name pms-backend-api pms-api:$BACKEND_TAG
