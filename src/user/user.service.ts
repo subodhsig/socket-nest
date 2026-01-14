@@ -5,17 +5,14 @@ import { Paginated } from 'src/common/pagination/interface/paginated.interface';
 import { PaginationProvider } from 'src/common/pagination/service/pagination.provider';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { Project } from 'src/projects/entities/project.entity';
-import { ProjectMember } from 'src/projects/entities/project-member.entity';
+
 import { UserStatusChangeDto } from './dto/user.status-change.dto';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(Project) private projectRepository: Repository<Project>,
-    @InjectRepository(ProjectMember)
-    private projectMemberRepo: Repository<ProjectMember>,
+
     private readonly pagination: PaginationProvider,
   ) {}
   //create user
@@ -99,65 +96,6 @@ export class UserService {
       },
       maxLimit: 100,
     });
-  }
-
-  async getWorkedWithMembers(userId: string) {
-    if (!userId) throw new NotFoundException('User ID is required');
-
-    //  Get all project memberships for this user (including deleted projects)
-    const userProjects = await this.projectMemberRepo
-      .createQueryBuilder('pm')
-      .withDeleted() // include soft-deleted memberships too
-      .innerJoinAndSelect('pm.project', 'project')
-      .where('pm.user_id = :userId', { userId })
-      .getMany();
-
-    //  Safely get all project IDs
-    const projectIds = userProjects
-      .map((pm) => pm.project?.project_id)
-      .filter(Boolean);
-
-    if (projectIds.length === 0) return [];
-
-    // Get all other members from those projects (include deleted projects)
-    const workedWithMembers = await this.projectMemberRepo
-      .createQueryBuilder('pm')
-      .withDeleted() // include deleted memberships
-      .innerJoinAndSelect('pm.user', 'user')
-      .innerJoinAndSelect('pm.project', 'project')
-      .where('pm.project_id IN (:...projectIds)', { projectIds })
-      .andWhere('user.user_id != :userId', { userId })
-      .getMany();
-
-    // Group by member and collect shared projects
-    const map = new Map();
-
-    for (const pm of workedWithMembers) {
-      const member = pm.user;
-      const project = pm.project;
-      if (!member || !project) continue;
-
-      if (!map.has(member.user_id)) {
-        map.set(member.user_id, {
-          id: member.user_id,
-          name: `${member.first_name} ${member.last_name}`,
-          email: member.email,
-          profileImage: member.profileImage,
-          designation: member.designation,
-          projectsWorkedTogether: [],
-        });
-      }
-
-      map.get(member.user_id).projectsWorkedTogether.push({
-        id: project.project_id,
-        title: project.title,
-        start_date: project.start_date,
-        end_date: project.end_date,
-        deleted_at: project.deleted_at, //  so you know if project is archived
-      });
-    }
-
-    return Array.from(map.values());
   }
 
   async findByEmailWithDeleted(email: string): Promise<User | null> {

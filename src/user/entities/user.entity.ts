@@ -1,9 +1,5 @@
 import { Exclude } from 'class-transformer';
 
-import { ProjectMember } from '../../projects/entities/project-member.entity';
-import { Project } from '../../projects/entities/project.entity';
-import { Subtask } from '../../subtasks/entities/subtask.entity';
-
 import {
   Column,
   CreateDateColumn,
@@ -15,15 +11,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Worklog } from '../../worklogs/entities/worklog.entity';
 
 // NEW imports for attachments & comments
 import { IsNotEmpty } from 'class-validator';
-import { Notification } from 'src/notification/entities/notification.entity';
-import { Attachment } from '../../attachments/entities/attachment.entity';
-import { Comment } from '../../comments/entities/comment.entity';
+
 import { Role } from '../../common/enums/user.role.enum';
-import { Task } from '../../tasks/entities/task.entity';
 
 @Entity({ name: 'user' })
 export class User {
@@ -82,36 +74,8 @@ export class User {
   isActive: boolean; //for password
 
   // Relations
-  @OneToMany(() => Project, (p) => p.owner)
-  owned_projects?: Project[];
-
-  @OneToMany(() => ProjectMember, (pm) => pm.user)
-  project_memberships?: ProjectMember[];
-
-  @OneToMany(() => Task, (t) => t.owner)
-  owned_tasks?: Task[];
-
-  @OneToMany(() => Task, (t) => t.assignee)
-  assigned_tasks?: Task[];
-
-  @OneToMany(() => Subtask, (s) => s.reporter)
-  reported_subtasks?: Subtask[];
-
-  @OneToMany(() => Subtask, (s) => s.assignee)
-  assigned_subtasks?: Subtask[];
-
-  @OneToMany(() => Worklog, (w) => w.user)
-  worklogs?: Worklog[];
-
-  @OneToMany(() => Notification, (n) => n.user)
-  notifications: Notification[];
 
   // --- NEW relations for attachments & comments ---
-  @OneToMany(() => Attachment, (a) => a.uploaded_by)
-  attachments?: Attachment[];
-
-  @OneToMany(() => Comment, (c) => c.author)
-  comments?: Comment[];
 
   @DeleteDateColumn({
     type: 'timestamptz',

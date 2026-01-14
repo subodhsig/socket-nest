@@ -68,14 +68,6 @@ export class UserController {
     return this.userService.findPaginated(dto);
   }
 
-  @Get('worked-with/:id')
-  @ApiOperation({
-    summary: 'Get users who have worked with the specified user',
-  })
-  async getUsersWorkedWith(@Param('id') id: string): Promise<User[]> {
-    return this.userService.getWorkedWithMembers(id);
-  }
-
   @Get('list/all-with-deleted')
   @ApiOperation({ summary: 'Get all users including deleted ones' })
   async allUserNotDeletedAndDeleted(): Promise<User[]> {
