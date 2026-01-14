@@ -42,10 +42,8 @@ async function bootstrap() {
 
   const port = Number(process.env.PORT) || 3005;
   await app.listen(port);
-  console.log(`API running on http://localhost:${port}/${baseUrlPrefix}/api`);
-  console.log(`Swagger UI: http://localhost:${port}/${baseUrlPrefix}/docs`);
-  console.log(
-    `OpenAPI JSON: http://localhost:${port}/${baseUrlPrefix}/docs-json`,
-  );
+  console.log(`API running on http://localhost:${port}/api`);
+  console.log(`Swagger UI: http://localhost:${port}/docs`);
+  console.log(`OpenAPI JSON: http://localhost:${port}/docs-json`);
 }
 void bootstrap();
