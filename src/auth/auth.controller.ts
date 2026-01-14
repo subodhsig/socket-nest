@@ -80,14 +80,6 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @Post('logout')
-  async logout(@Req() req) {
-    const userId = req.user.user_id; // Extract user ID from JWT payload
-    return this.authService.logout(userId);
-  }
-
   @Post('forgot-password')
   @ApiOperation({ summary: 'Forgot password' })
   async forgotPassword(@Body() forgetpassworddto: ForgetPasswordDto) {

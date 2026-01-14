@@ -23,7 +23,7 @@ async function bootstrap() {
   app.setGlobalPrefix(`${baseUrlPrefix}/api`);
 
   const config = new DocumentBuilder()
-    .setTitle('Project Management System')
+    .setTitle('Socket Auth and User Module')
     .setDescription('API documentation')
     .setVersion('1.0')
     .addBearerAuth()
